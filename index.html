@@ -50,6 +50,18 @@
     document.getElementById('productSubtitle').textContent = localStorage.getItem('productSubtitle');
     document.getElementById('productImage').src = localStorage.getItem('productImage');
     document.getElementById('productPrice').textContent = "$" + localStorage.getItem('productPrice');
+        const product = JSON.parse(localStorage.getItem('checkoutProduct'));
+
+if (product) {
+  document.querySelector('#description').innerHTML = `
+    <h2>${product.title}</h2>
+    <h3>${product.category}</h3>
+    <img src="${product.image}" alt="${product.title}" style="width:200px">
+    <h1>$${product.price}</h1>
+    <button id='editOrder'>Edit the Order</button>
+  `;
+}
+
 </script>
 
 </body>

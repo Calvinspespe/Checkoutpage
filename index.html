@@ -2,68 +2,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    .checkout-container {
+      max-width: 600px;
+      margin: auto;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    .checkout-container img {
+      max-width: 100%;
+      height: 200px;
+      object-fit: contain;
+      margin-bottom: 20px;
+    }
+    h1 {
+      color: #0056b3;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 1.1em;
+      margin: 10px 0;
+    }
+    .price {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #28a745;
+      margin: 20px 0;
+    }
+    button {
+      margin: 10px 5px;
+      padding: 10px 20px;
+      background-color: #0056b3;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #003d80;
+    }
+    .message {
+      margin-top: 20px;
+      color: green;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-    <main id='container'>
-        <aside id='info'>
-            <label for='paymentMethod'>Payment Method</label>
-            <select name='paymentMethod'>
-                <option>Visa</option>
-                <option>MasterCard</option>
-                <option>Airtel Money</option>
-            </select>
 
-            <!-- Credit Card Number -->
-            <label for='cardNumber'>Credit Card Number</label>
-            <input type='text' name='cardNumber' />
+  <div class="checkout-container" id="checkout-container">
+    <p>Loading product details...</p>
+  </div>
 
-            <!-- Credit Card Holder Name -->
-            <label for='cardholderName'>Cardholder Name</label>
-            <input type='text' name='cardholderName' />
+  <script>
+    const container = document.getElementById('checkout-container');
+    const productData = localStorage.getItem('checkoutProduct');
 
-            <!-- Expiration Date -->
-            <label for='cardDate'>Expiration Date</label>
-            <input type='text' name='cardDate' />
+    if (productData) {
+      const product = JSON.parse(productData);
+      container.innerHTML = `
+        <h1>Checkout</h1>
+        <img src="${product.image}" alt="${product.title}">
+        <h2>${product.title}</h2>
+        <p>${product.category}</p>
+        <p class="price">$${product.price.toFixed(2)}</p>
+        <p>${product.description}</p>
+        <button onclick="confirmPurchase()">Confirm Purchase</button>
+        <button onclick="window.location.href='index.html'">Return to Store</button>
+        <div id="confirmation" class="message"></div>
+      `;
+    } else {
+      container.innerHTML = `
+        <h1>No Product Found</h1>
+        <p>Please go back and select a product.</p>
+        <button onclick="window.location.href='index.html'">Return to Store</button>
+      `;
+    }
 
-            <!-- CVV Card Number -->
-            <label for='cvv'>CVV</label>
-            <input type='text' name='cvv' />
-
-            <button id='makePayment'>MAKE A PAYMENT</button>
-        </aside>
-        <aside id='description'>
-         <h2 id="productTitle"></h2>
-<h3 id="productSubtitle"></h3>
-<img id="productImage" src="" alt="Selected Product">
-<h1 id="productPrice"></h1>
-
-          <button id='editOrder'>Edit the Order</button>
-        </aside>
-    </main>
-    <script>
-    // Load product details from localStorage
-    document.getElementById('productTitle').textContent = localStorage.getItem('productTitle');
-    document.getElementById('productSubtitle').textContent = localStorage.getItem('productSubtitle');
-    document.getElementById('productImage').src = localStorage.getItem('productImage');
-    document.getElementById('productPrice').textContent = "$" + localStorage.getItem('productPrice');
-        const product = JSON.parse(localStorage.getItem('checkoutProduct'));
-
-if (product) {
-  document.querySelector('#description').innerHTML = `
-    <h2>${product.title}</h2>
-    <h3>${product.category}</h3>
-    <img src="${product.image}" alt="${product.title}" style="width:200px">
-    <h1>$${product.price}</h1>
-    <button id='editOrder'>Edit the Order</button>
-  `;
-}
-
-</script>
+    function confirmPurchase() {
+      document.getElementById('confirmation').textContent = '🎉 Purchase successful! Thank you for your order.';
+      localStorage.removeItem('checkoutProduct');
+    }
+  </script>
 
 </body>
 </html>
-

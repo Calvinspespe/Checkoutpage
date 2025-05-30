@@ -1,103 +1,97 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Checkout</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
-    .checkout-container {
-      max-width: 600px;
-      margin: auto;
-      background-color: #fff;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-    .checkout-container img {
-      max-width: 100%;
-      height: 200px;
-      object-fit: contain;
-      margin-bottom: 20px;
-    }
-    h1 {
-      color: #0056b3;
-      margin-bottom: 10px;
-    }
-    p {
-      font-size: 1.1em;
-      margin: 10px 0;
-    }
-    .price {
-      font-size: 1.5em;
-      font-weight: bold;
-      color: #28a745;
-      margin: 20px 0;
-    }
-    button {
-      margin: 10px 5px;
-      padding: 10px 20px;
-      background-color: #0056b3;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #003d80;
-    }
-    .message {
-      margin-top: 20px;
-      color: green;
-      font-size: 1.2em;
-      font-weight: bold;
-    }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 text-gray-800">
+  <main class="max-w-6xl mx-auto p-6 md:flex gap-8 mt-10">
+    
+    <!-- Payment Info -->
+    <section class="w-full md:w-1/2 bg-white p-6 rounded-xl shadow-md">
+      <h2 class="text-2xl font-bold mb-4">Payment Information</h2>
+      <div class="space-y-4">
+        <label class="block">
+          <span class="font-medium">Payment Method</span>
+          <select class="w-full mt-1 border rounded-md p-2">
+            <option>Visa</option>
+            <option>MasterCard</option>
+            <option>Airtel Money</option>
+          </select>
+        </label>
+        <label class="block">
+          <span class="font-medium">Card Number</span>
+          <input type="text" class="w-full border rounded-md p-2 mt-1" placeholder="1234 5678 9012 3456">
+        </label>
+        <label class="block">
+          <span class="font-medium">Cardholder Name</span>
+          <input type="text" class="w-full border rounded-md p-2 mt-1" placeholder="John Doe">
+        </label>
+        <div class="flex gap-4">
+          <label class="block w-1/2">
+            <span class="font-medium">Exp. Date</span>
+            <input type="text" class="w-full border rounded-md p-2 mt-1" placeholder="MM/YY">
+          </label>
+          <label class="block w-1/2">
+            <span class="font-medium">CVV</span>
+            <input type="text" class="w-full border rounded-md p-2 mt-1" placeholder="123">
+          </label>
+        </div>
+        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-md transition">
+          Make Payment
+        </button>
+      </div>
+    </section>
 
-  <div class="checkout-container" id="checkout-container">
-    <p>Loading product details...</p>
-  </div>
+    <!-- Cart Summary -->
+    <section class="w-full md:w-1/2 bg-white p-6 rounded-xl shadow-md mt-10 md:mt-0">
+      <h2 class="text-2xl font-bold mb-4">Your Order</h2>
+      <div id="cartItems" class="space-y-4"></div>
+      <div class="mt-6 text-right text-xl font-bold text-green-600" id="totalPrice"></div>
+      <button onclick="window.location.href='index.html'" class="w-full mt-6 border border-gray-300 p-3 rounded-md hover:bg-gray-100 transition">
+        Edit Cart
+      </button>
+    </section>
+  </main>
 
   <script>
-    const container = document.getElementById('checkout-container');
-    const productData = localStorage.getItem('checkoutProduct');
+    const cartItemsContainer = document.getElementById('cartItems');
+    const totalPriceEl = document.getElementById('totalPrice');
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-    if (productData) {
-      const product = JSON.parse(productData);
-      container.innerHTML = `
-        <h1>Checkout</h1>
-        <img src="${product.image}" alt="${product.title}">
-        <h2>${product.title}</h2>
-        <p>${product.category}</p>
-        <p class="price">$${product.price.toFixed(2)}</p>
-        <p>${product.description}</p>
-        <button onclick="confirmPurchase()">Confirm Purchase</button>
-        <button onclick="window.location.href='index.html'">Return to Store</button>
-        <div id="confirmation" class="message"></div>
-      `;
+    if (cart.length === 0) {
+      cartItemsContainer.innerHTML = '<p class="text-gray-500">Your cart is empty.</p>';
+      totalPriceEl.textContent = '';
     } else {
-      container.innerHTML = `
-        <h1>No Product Found</h1>
-        <p>Please go back and select a product.</p>
-        <button onclick="window.location.href='index.html'">Return to Store</button>
-      `;
-    }
-
-    function confirmPurchase() {
-      document.getElementById('confirmation').textContent = '🎉 Purchase successful! Thank you for your order.';
-      localStorage.removeItem('checkoutProduct');
+      let total = 0;
+      cart.forEach(product => {
+        total += product.price;
+        const item = document.createElement('div');
+        item.className = 'flex gap-4 items-center animate-fade-in';
+        item.innerHTML = `
+          <img src="${product.image}" class="w-24 h-24 object-cover rounded-md border">
+          <div>
+            <h3 class="text-lg font-semibold">${product.title}</h3>
+            <p class="text-sm text-gray-500">${product.category}</p>
+            <p class="text-lg font-bold text-green-600">$${product.price.toFixed(2)}</p>
+          </div>
+        `;
+        cartItemsContainer.appendChild(item);
+      });
+      totalPriceEl.textContent = `Total: $${total.toFixed(2)}`;
     }
   </script>
 
+  <style>
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fade-in 0.4s ease forwards;
+    }
+  </style>
 </body>
 </html>
